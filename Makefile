@@ -1,60 +1,76 @@
-# Makefile for ZA Server VPS
+#!/usr/bin/env make
 
-.PHONY: help setup-do setup-oracle destroy deploy backup monitor logs
+.PHONY: help setup deploy monitor logs destroy clean
 
-# Default target
 help:
-	@echo "ZA Server VPS Commands"
+	@echo "╔═══════════════════════════════════════════════════════════╗"
+	@echo "║           ZiVPN - Oracle Free Tier VPN Server             ║"
+	@echo "╚═══════════════════════════════════════════════════════════╝"
 	@echo ""
-	@echo "Setup Commands:"
-	@echo "  make setup-do         - Deploy on DigitalOcean"
-	@echo "  make setup-oracle     - Deploy on Oracle Cloud"
-	@echo "  make destroy          - Destroy infrastructure"
+	@echo "Available commands:"
 	@echo ""
-	@echo "Deployment Commands:"
-	@echo "  make deploy           - Deploy application"
-	@echo "  make backup           - Backup data"
-	@echo ""
-	@echo "Monitoring Commands:"
-	@echo "  make monitor          - Setup monitoring"
-	@echo "  make logs             - View application logs"
+	@echo "  make setup       - Deploy ZiVPN on Oracle Cloud"
+	@echo "  make deploy      - Deploy/restart ZiVPN service"
+	@echo "  make monitor     - Open monitoring dashboard"
+	@echo "  make logs        - View real-time logs"
+	@echo "  make stats       - Get current statistics"
+	@echo "  make destroy     - Destroy infrastructure (WARNING!)"
+	@echo "  make clean       - Clean local files"
 	@echo ""
 
-# Infrastructure setup
-setup-do:
-	@read -p "Enter DigitalOcean API Token: " TOKEN; \
-	bash scripts/digitalocean-setup.sh $$TOKEN
+# Setup Oracle Free Tier
+setup:
+	@echo "🚀 Setting up ZiVPN on Oracle Cloud Always Free Tier..."
+	@bash scripts/zivpn-oracle-free-setup.sh
 
-setup-oracle:
-	bash scripts/oracle-setup.sh
-
-destroy:
-	cd terraform && terraform destroy
-
-# Deployment
+# Deploy ZiVPN
 deploy:
-	@read -p "Enter Server IP: " IP; \
-	@read -p "Enter App Name: " APP; \
-	bash scripts/deploy.sh $$IP $$APP
+	@echo "📦 Deploying ZiVPN service..."
+	@ssh -i ~/.ssh/id_rsa ubuntu@$$(terraform output -raw instance_public_ip 2>/dev/null || echo "[server-ip]") \
+		"sudo bash /opt/zivpn/deploy-zivpn.sh"
 
-backup:
-	@read -p "Enter Server IP: " IP; \
-	bash scripts/backup.sh $$IP ./backups
-
-# Monitoring
+# Monitor
 monitor:
-	bash scripts/monitoring-setup.sh
+	@SERVER_IP=$$(cd terraform/oracle-free && terraform output -raw instance_public_ip 2>/dev/null); \
+	if [ -n "$$SERVER_IP" ]; then \
+		echo "Opening ZiVPN Dashboard..."; \
+		open "http://$$SERVER_IP:8080" || xdg-open "http://$$SERVER_IP:8080" || echo "Visit: http://$$SERVER_IP:8080"; \
+	else \
+		echo "❌ Server not deployed yet. Run: make setup"; \
+	fi
 
+# Logs
 logs:
-	@read -p "Enter Server IP: " IP; \
-	ssh appuser@$$IP "docker-compose logs -f app"
+	@SERVER_IP=$$(cd terraform/oracle-free && terraform output -raw instance_public_ip 2>/dev/null); \
+	if [ -n "$$SERVER_IP" ]; then \
+		ssh -i ~/.ssh/id_rsa ubuntu@$$SERVER_IP "sudo journalctl -u zivpn -f"; \
+	else \
+		echo "❌ Server not deployed yet. Run: make setup"; \
+	fi
 
-# Local development
-dev:
-	docker-compose -f config/docker-compose.yml up -d
+# Stats
+stats:
+	@SERVER_IP=$$(cd terraform/oracle-free && terraform output -raw instance_public_ip 2>/dev/null); \
+	if [ -n "$$SERVER_IP" ]; then \
+		curl -s "http://$$SERVER_IP:8080/stats" | jq . || echo "Dashboard not accessible"; \
+	else \
+		echo "❌ Server not deployed yet. Run: make setup"; \
+	fi
 
-dev-logs:
-	docker-compose -f config/docker-compose.yml logs -f
+# Destroy (with confirmation)
+destroy:
+	@echo "⚠️  WARNING: This will destroy all ZiVPN infrastructure!"
+	@read -p "Are you sure? Type 'yes' to confirm: " CONFIRM; \
+	if [ "$$CONFIRM" = "yes" ]; then \
+		cd terraform/oracle-free && terraform destroy; \
+	else \
+		echo "Cancelled."; \
+	fi
 
-dev-down:
-	docker-compose -f config/docker-compose.yml down
+# Clean
+clean:
+	@echo "🧹 Cleaning up local files..."
+	@rm -rf terraform/oracle-free/.terraform
+	@rm -f terraform/oracle-free/*.tfstate*
+	@rm -f terraform/oracle-free/*.tfplan
+	@echo "✅ Cleaned!"

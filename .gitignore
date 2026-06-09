@@ -5,11 +5,13 @@
 .terraform.lock.hcl
 terraform.tfvars
 !terraform/variables.tf
+*.tfplan
 
 # Environment
 .env
 .env.local
 .env.*.local
+.envrc
 
 # Logs
 *.log
@@ -25,9 +27,9 @@ venv/
 *.swp
 *.swo
 *~
+.DS_Store
 
 # OS
-.DS_Store
 Thumbs.db
 
 # Backup files
@@ -37,6 +39,7 @@ Thumbs.db
 # Private keys
 *.pem
 *.key
+*.pub
 
 # Docker
 .dockerignore
@@ -44,3 +47,8 @@ Thumbs.db
 # Build
 build/
 dist/
+
+# ZiVPN specific
+/backup/
+/data/
+/logs/

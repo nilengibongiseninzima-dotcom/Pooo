@@ -1,0 +1,60 @@
+{
+  "app": {
+    "name": "ZiVPN",
+    "version": "1.0.0",
+    "description": "Custom UDP VPN for South African users"
+  },
+  "server": {
+    "udp_port": 1194,
+    "udp_port_failover": 1195,
+    "udp_port_stealth": 443,
+    "http_port": 8080,
+    "bind_address": "0.0.0.0"
+  },
+  "network": {
+    "buffer_size": 65536,
+    "max_connections": 10000,
+    "connection_timeout_ms": 300000,
+    "packet_timeout_ms": 60000
+  },
+  "encryption": {
+    "enabled": true,
+    "algorithm": "aes-256-cbc",
+    "key": "change-this-to-your-secure-encryption-key-in-production",
+    "key_rotation_hours": 24
+  },
+  "compression": {
+    "enabled": true,
+    "level": 6,
+    "min_packet_size": 100
+  },
+  "security": {
+    "rate_limit_packets_per_second": 1000,
+    "ddos_protection": true,
+    "ddos_threshold": 10000,
+    "firewall_enabled": true,
+    "whitelist_enabled": false
+  },
+  "performance": {
+    "worker_threads": 4,
+    "packet_queue_size": 10000,
+    "connection_pool_size": 5000
+  },
+  "logging": {
+    "level": "info",
+    "format": "json",
+    "file": "/var/log/zivpn/zivpn.log",
+    "max_file_size_mb": 100,
+    "max_files": 10
+  },
+  "monitoring": {
+    "enabled": true,
+    "metrics_interval_seconds": 10,
+    "health_check_interval_seconds": 30
+  },
+  "geo": {
+    "region": "Africa",
+    "country": "South Africa",
+    "timezone": "Africa/Johannesburg"
+  }
+}

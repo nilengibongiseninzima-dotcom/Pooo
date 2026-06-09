@@ -1,0 +1,64 @@
+╔════════════════════════════════════════════════════════════════╗
+║                    ZiVPN Client Configuration                  ║
+║              South African VPN Server - Always Free             ║
+╚════════════════════════════════════════════════════════════════╝
+
+🔧 SERVER DETAILS:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Server Status:          [Will be populated after deployment]
+Server Location:        Frankfurt, EU (Closest to ZA)
+Primary Port (UDP):     1194
+Failover Port (UDP):    1195
+Stealth Port (UDP):     443
+Protocol:               UDP
+
+📊 MONITORING:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Dashboard:              http://[server-ip]:8080
+Stats API:              http://[server-ip]:8080/stats
+Health Check:           http://[server-ip]:8080/health
+
+🔐 SECURITY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Encryption:             AES-256-CBC
+Compression:            Enabled
+Auto-Reconnect:         Enabled
+DDoS Protection:        Enabled
+Rate Limiting:          1000 packets/second
+
+📝 QUICK START:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Get Server IP:
+   terraform output instance_public_ip
+
+2. Test Connectivity:
+   nc -u [server-ip] 1194
+
+3. View Dashboard:
+   http://[server-ip]:8080
+
+4. Check Stats:
+   curl http://[server-ip]:8080/stats | jq
+
+💰 COST:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Compute (2 vCPU, 12GB RAM):     $0/month (Always Free)
+Storage (200GB):                 $0/month (Always Free)
+Bandwidth:                        $0/month (Unlimited)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+TOTAL:                           $0/month ✅
+
+📍 REGION: South Africa (ZA)
+🌍 HOSTING: Oracle Cloud Always Free Tier
+⚡ PERFORMANCE: Optimized for ZA bandwidth
+🔒 SECURITY: Enterprise-grade encryption
+📊 MONITORING: Real-time stats & dashboard
+♾️  UPTIME: 24/7 availability
+
+═════════════════════════════════════════════════════════════════
+
+For more information, see:
+- docs/ZIVPN_SETUP.md
+- docs/ZIVPN_DEPLOYMENT.md
+- docs/ZIVPN_SECURITY.md
